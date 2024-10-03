@@ -1,0 +1,78 @@
+name: Test workflow
+
+on:
+  push
+
+jobs:
+  test-env:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump github context
+        run:   echo "$GITHUB_CONTEXT"
+        shell: bash
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+          REPO_OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.event.repository.name }}
+
+
+  test-docker:
+    runs-on: ubuntu-latest
+    container: docker:latest
+    steps:
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 11
+      - name: Execute Java
+        run: |
+          which java
+          type java
+          echo $JAVA_HOME
+          echo $PATH
+          ls -l $(which java)
+          $(which java) -version
+          echo ${GITHUB_ACTION_PATH}
+
+  test-ubuntu:
+    runs-on: ubuntu-latest
+    container: ubuntu:latest
+    steps:
+      - name: Install docker and docker-compose
+        run: |
+          apt -y update 
+          apt -y install sudo curl
+          curl -fsSL https://get.docker.com -o get-docker.sh
+          sudo sh ./get-docker.sh
+          apt-get install docker-compose-plugin
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 11
+      - name: Execute Java
+        run: |
+          which java
+          type java
+          echo $JAVA_HOME
+          echo $PATH
+          ls -l $(which java)
+          $(which java) -version
+          echo ${GITHUB_ACTION_PATH}
+
+  test-java:
+    runs-on: ubuntu-latest
+    container: alpine:latest
+    steps:
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 16
+      - name: Execute Java
+        run: |
+          echo $JAVA_HOME
+          echo $PATH
+          java -version
+          echo ${GITHUB_ACTION_PATH}
