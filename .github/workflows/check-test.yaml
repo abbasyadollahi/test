@@ -1,0 +1,5 @@
+name: Test check
+jobs:
+  check-title:
+    uses: ./.github/workflows/check-pr-title.yaml@main
+    secrets: inherit
